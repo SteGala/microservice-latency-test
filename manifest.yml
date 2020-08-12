@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-test
+  labels:
+    app.kubernetes.io/name: network-test
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: network-test
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: network-test
+    spec:
+      containers:
+      - name: network-test-pod 
+        imagePullPolicy: Always
+        image: stegala/network-test:latest
+        name: network-test
+        ports:
+        - containerPort: 5000
+        env:
+          - name: N_THREAD
+            value: "3"
+          - name: N_GET_THREAD
+            value: "10"
+          - name: TARGET_URL
+            value: "http://10.104.162.206:9080" 
+          - name: SELENIUM_HUB_URL
+            value: "http://selenium-hub:4444/wd/hub"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-test-service
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: network-test
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
