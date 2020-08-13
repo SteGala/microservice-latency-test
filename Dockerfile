@@ -14,9 +14,7 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 RUN apt install ./google-chrome-stable_current_amd64.deb -y
 
 ADD main.py .
-ADD test.py .
-ADD chromedriver .
 
-EXPOSE 5000
+#EXPOSE 5000
 
 CMD ["python", "main.py"]

@@ -1,16 +1,19 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from datetime import datetime
-from flask import Flask, json
+#from flask import Flask, json
 import threading
 import time
 import os
+import random
 
 
 N_THREAD = int(os.environ['N_THREAD'])
 N_GET_THREAD = int(os.environ['N_GET_THREAD']) # number of get operation performed by each thread
 URL = os.environ['TARGET_URL']
 SELENIUM_HUB_URL = os.environ['SELENIUM_HUB_URL']
+
+HOSTS = [URL+"/product/OLJCESPC7Z", URL+"/product/6E92ZMYYFZ", URL+"/product/LS4PSXUNUM", URL+"/product/9SIQT8TOJO", URL+"/cart"]
 
 threadResults = [dict() for x in range(N_THREAD)]
 threadCount = [dict() for x in range(N_THREAD)]
@@ -19,7 +22,7 @@ threadID = dict()
 finalResult = dict()
 finalCount = dict()
 
-api = Flask(__name__)
+#api = Flask(__name__)
 
 def PerformGetOperation(id):
 
@@ -35,10 +38,14 @@ def PerformGetOperation(id):
         except:
             systemInited = False
 
+    print("Thread {} inited".format(id), flush=True)
+
     for i in range(N_GET_THREAD):
         recordTime = datetime.now().strftime("%H:%M:%S")
+
+        n = random.randint(0,4)
         
-        driver.get(URL)
+        driver.get(HOSTS[n])
 
         recordValue = GetNetworkResources(driver)
         if recordTime in threadResults[id].keys():
@@ -74,25 +81,28 @@ def MergeRecords():
                 finalResult[key] = value
                 finalCount[key] = threadCount[i][key]
 
-
-def ProduceJsonResult():
-    lst = []
-
     for k, r in finalResult.items():
-        jsonRecord = {
-            'Time': k,
-            'Latency-Value': r,
-            'GET-Operation-Performed': finalCount[k],
-        }
-
-        lst.append(jsonRecord)
-
-    return lst
+        print("{} {} {}".format(k, r/finalCount[k], finalCount[k]), flush=True)
 
 
-@api.route('/results', methods=['GET'])
-def get_results():
-  return json.dumps(ProduceJsonResult())
+#def ProduceJsonResult():
+#    lst = []
+#
+#    for k, r in finalResult.items():
+#        jsonRecord = {
+#            'Time': k,
+#            'Latency-Value': r,
+#            'GET-Operation-Performed': finalCount[k],
+#        }
+#
+#        lst.append(jsonRecord)
+#
+#    return lst
+
+
+#@api.route('/results', methods=['GET'])
+#def get_results():
+#  return json.dumps(ProduceJsonResult())
 
 
 if __name__ == "__main__":
@@ -111,7 +121,9 @@ if __name__ == "__main__":
 
     MergeRecords()
 
-    print("Test process completed. Results available under /results")
+    print("Test process completed", flush=True)
 
-    api.run()
+    #api.run()
+
+    time.sleep(10000)
 
