@@ -22,7 +22,7 @@ spec:
         resources:
           limits:
             memory: "2000Mi"
-            cpu: "1"
+            cpu: ".7"
         livenessProbe:
           httpGet:
             path: /wd/hub/status
