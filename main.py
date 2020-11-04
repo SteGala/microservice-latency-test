@@ -81,9 +81,13 @@ def MergeRecords():
                 finalResult[key] = value
                 finalCount[key] = threadCount[i][key]
 
-    for k, r in finalResult.items():
-        print("{} {} {}".format(k, r/finalCount[k], finalCount[k]), flush=True)
+    f= open("guru99.txt","w+")
 
+    for k, r in finalResult.items():
+        f.write("{} {} {}\n".format(k, r/finalCount[k], finalCount[k]))
+        #print("{} {} {}".format(k, r/finalCount[k], finalCount[k]), flush=True)
+
+    f.close()
 
 #def ProduceJsonResult():
 #    lst = []
